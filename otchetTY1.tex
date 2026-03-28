@@ -1,0 +1,284 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}} % Точки для разделов
+
+% Уменьшаем верхний отступ на титульной странице
+\geometry{
+    top=2cm,       % Верхнее поле
+    bottom=2cm,    % Нижнее поле
+    left=2cm,      % Левое поле
+    right=2cm,     % Правое поле
+}
+
+\begin{document}
+
+% ТИТУЛЬНЫЙ ЛИСТ
+\thispagestyle{empty} % Убираем номер страницы и колонтитулы
+\begin{center}
+МИНИСТЕРСТВО НАУКИ И ВЫСШЕГО ОБРАЗОВАНИЯ
+
+РОССИЙСКОЙ ФЕДЕРАЦИИ
+
+\vspace{1cm}
+
+Федеральное государственное автономное
+
+образовательное учреждение высшего образования
+
+«Национальный исследовательский Нижегородский государственный
+
+университет им. Н.И. Лобачевского (ННГУ)»
+
+\vspace{4cm}
+
+\textbf{Лабораторная работа на тему:}
+
+\vspace{0.5cm}
+
+\textbf{«Стабилизация верхнего положения перевёрнутого
+маятника»}
+
+\vspace{3cm}
+
+\begin{flushright}
+\small
+Выполнили: Малеев Кирилл, Сорока Сергей, \\
+Муратов Егор, Жданкин Александр, \\
+Осадчий Дмитрий, Кабанчиков Съебас, \\
+Орехов Никита.\\
+Группа: 3823Б1ПМоп3 \\
+Подгруппа № 3
+\end{flushright}
+
+\vspace{7cm}
+
+\textbf{\large Нижний Новгород}
+
+\textbf{\large 2025}
+\end{center}
+
+% Теперь устанавливаем обычный стиль страниц для остальных страниц
+\pagestyle{plain} % Обычные номера страниц
+
+\newpage
+
+% ОГЛАВЛЕНИЕ (СОДЕРЖАНИЕ)
+\renewcommand{\contentsname}{СОДЕРЖАНИЕ:}
+
+\tableofcontents
+
+\newpage
+
+\section{Введение}
+
+ $\indent$Данная работа посвящена исследованию задачи стабилизации перевернутого маятника с подвижной точкой опоры. Задача удержания перевернутого маятника в верхнем положении является классической задачей теории управления. Несмотря на кажущуюся простоту, она служит удобной моделью
+для отработки методов управления неустойчивыми объектами, так как сочетает в себе нелинейность
+и высокую чувствительность к возмущениям.
+
+Актуальность этой задачи обусловлена её широким применением в современной технике. Стабилизация перевернутого маятника является ключевым элементом в системах управления ракетаминосителями на старте, где необходимо удерживать вертикальное положение центра масс. Аналогичные принципы лежат в основе управления современными высокоманевренными истребителями с
+передней горизонтальной плоскостью оперения (ПГО), а также в системах активной подвески автомобилей для гашения колебаний кузова. Более того, эта модель служит прототипом для балансирующих роботов (например, Segway) и является важным этапом в изучении мехатронных систем.
+
+В данной работе рассматриваются две стратегии управления: первая обеспечивает стабилизацию
+только угла отклонения маятника, вторая — полную стабилизацию (угол и положение точки опоры). В работе приведён вывод уравнений движения, анализ устойчивости с использованием критерия Рауса-Гурвица, а также результаты численного моделирования, подтверждающие теоретические
+выводы.
+
+\newpage
+
+\section{Уравнение движения маятника}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\textwidth]{catjpg.jpg}
+\caption{Кот(обыкновенный)}
+\label{fig:risunok}
+\end{figure}
+
+
+Функция Лагранжа определяется как разность кинетической и потенциальной энергий:
+
+\begin{gather}
+L=K-U,
+\end{gather}
+где кинетическая энергия $K$ и потенциальная энергия $U$ заданы выражениями:
+\begin{gather}
+K = \frac{m}{2}[(\dot{u}^2-\dot{\varphi}l\cos(\varphi))^2+l^2\dot{\varphi}^2sin^2(\varphi)] = \frac{m}{2}(\dot{u}^2-2\dot{\varphi}\dot{u}\cos(\varphi)+l^2\dot{\varphi}^2),\nonumber\\
+U=mglcos(\varphi).
+\end{gather}
+Полный лагранжиан:
+\begin{gather}
+L=\frac{m}{2}(\dot{u}^2-2\dot{\varphi}\dot{u}\cos(\varphi)+l^2\dot{\varphi}^2)-mglcos(\varphi).
+\end{gather}
+Уравнение Лагранжа:
+\begin{gather}
+\frac{d}{dt}\left(\frac{dL}{d\dot{\varphi}}\right)-\frac{dL}{d\varphi}=0.
+\end{gather}
+Найдем частные прлизводные:
+\begin{gather}
+\frac{dL}{d\varphi}= \frac{m}{2}2l\dot{u}\dot{\varphi}\sin(\varphi)+mgl\sin(\varphi).\nonumber\\
+\frac{dL}{d\dot{\varphi}}=-\frac{m}{2}2l\dot{u}\cos(\varphi)+ml^2\dot{\varphi}.\nonumber\\
+\frac{d}{dt}\left(\frac{dL}{d\dot{\varphi}}\right)=-ml\ddot{u}\cos(\varphi)+ml^2\ddot{\varphi}+ml\dot{u}\dot{\varphi}sin(\varphi)
+\end{gather}
+Подставим (5) в (4):
+\begin{gather}
+-ml\ddot{u}\cos(\varphi)+ml^2\ddot{\varphi}+ml\dot{u}\dot{\varphi}sin(\varphi)-ml\dot{u}\dot{\varphi}\sin(\varphi)-mgl\sin(\varphi)=0    \quad| :ml\nonumber\\
+\ddot{u}\cos(\varphi)+l\ddot{\varphi}+\dot{u}\dot{\varphi}sin(\varphi)-\dot{u}\dot{\varphi}\sin(\varphi)-g\sin(\varphi)=0.\nonumber\\
+\ddot{u}\cos(\varphi)+l\ddot{\varphi}-g\sin(\varphi)=0.\nonumber\\
+\ddot{\varphi}-\frac{\ddot{u}}{l}\cos(\varphi)-\frac{g}{l}\sin(\varphi)=0.\nonumber\\
+\boxed{\ddot{\varphi} - \frac{g}{l} \sin(\varphi) = \frac{\ddot{u}}{l} \cos(\varphi)} \qquad \text{(уравнение движения с управлением)}
+\end{gather}
+
+
+
+\newpage
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Формулки из п4 и п5}
+
+Мне в падлу все в соло делать, так что я просто вам формул накатаю(не все), а вы уже сами как то справитесь.
+\\\\
+-------------------------------------
+
+Для анализа устойчивости найдем решенеи уравнения в виде:
+\begin{gather}
+\varphi(t)=Ae^{\lambda t}\nonumber\\
+\lambda^2Ae^{\lambda t}+\frac{b}{l}\lambda Ae^{\lambda t}+\frac{a-g}{l} Ae^{\lambda t}=0    \quad:Ae^{\lambda t}\nonumber\\
+\lambda^2+\frac{b}{l}\lambda+\frac{a-g}{l}=0.\nonumber
+\end{gather}
+
+Введем обозначения:
+\begin{gather}
+\frac{b}{l}=2\delta, \quad \frac{a-g}{l}=\omega^2,\nonumber
+\end{gather}
+где $\delta$ - коэффицент затухания, а $\omega$ -собственная частота системы.
+\begin{gather}
+\lambda^2 +2\delta\lambda+\omega^2=0
+\end{gather}
+
+Корни характеристического уравнения находятся по формуле:
+\begin{gather}
+\lambda_{1,2} = \frac{-2\delta\pm\sqrt{4\delta^2-4\omega^2}}{2}.\nonumber\\
+\lambda_{1,2} = -\delta \pm \sqrt{\delta^2-\omega^2}.
+\end{gather}
+-----------------------------------------------
+
+Для устранения этого недостатка необходимо расширить закон управления, добавив обратную
+связь по положению и скорости точки опоры. Расширенное управление имеет вид:
+\begin{gather}
+\ddot{u}=a\varphi+b\dot{\varphi} +cu+d\dot{u}.
+\end{gather}
+где $a,b,c,d$ - параметры регулятора.\\
+Линеаризованное уравнение движения перевернутого маятница имеет вид:
+\begin{gather}
+\ddot{\varphi}- \frac{g}{l}\varphi=\frac{\ddot{u}}{l}.
+\end{gather}
+Подсталяя управление (9) в уравнение маятника (10), получаем:
+\begin{gather}
+\ddot{\varphi}-\frac{g}{l}\varphi=\frac{1}{l}(a\varphi+b\dot{\varphi}+cu+d\dot{u}).\nonumber\\
+\ddot{\varphi}-\frac{g}{l}\varphi=\frac{a}{l}\varphi+\frac{b}{l}\dot{\varphi}+\frac{c}{l}u+\frac{d}{l}\dot{u}.
+\end{gather}
+Выражаем $\ddot{\varphi}$:
+\begin{gather}
+\ddot{\varphi}=\frac{a}{l}\varphi+\frac{b}{l}\dot{\varphi}+\frac{c}{l}u+\frac{d}{l}\dot{u}+\frac{g}{l}\varphi.\nonumber\\
+\ddot{\varphi}=\frac{b}{l}\dot{\varphi}+\frac{a+g}{l}\varphi+\frac{c}{l}u+\frac{d}{l}\dot{u}.
+\end{gather}
+
+Таким образом, замкнутая система описывается двумя диффурунциальными уравнениями:
+
+\begin{equation}
+\begin{cases}
+\ddot{\varphi} = \dfrac{b}{l} \dot{\varphi} + \dfrac{a+g}{l} \varphi + \dfrac{c}{l} u + \dfrac{d}{l} \dot{u} \\ 
+\ddot{u} = a\varphi + b\dot{\varphi} + cu + du 
+\end{cases}
+\end{equation}
+
+Для анализа устойчивости ищем решение в виде экспонент:
+
+\begin{equation}
+\varphi(t) = Ae^{\lambda t}, \quad u(t) = Be^{\lambda t}
+\end{equation}
+
+Подставляя (14) в систему (13), получаем:
+
+\begin{equation}
+\begin{cases}
+\left(\lambda^2 - \dfrac{b}{l}\lambda - \dfrac{a+g}{l}\right)A - \left(\dfrac{c}{l} + \dfrac{d}{l}\lambda\right)B = 0 \\[1em]
+\left(a + b\lambda\right)A + \left(-\lambda^2 + c + d\lambda\right)B = 0
+\end{cases}
+\end{equation}
+
+Переносим все члены в левую часть:
+\begin{equation}
+\begin{cases} 
+\left( \lambda^2 - \dfrac{b}{l} \lambda - \dfrac{a + g}{l} \right) A - \left( \dfrac{c}{l} + \dfrac{d}{l} \lambda \right) B = 0 \\ 
+(a + b\lambda)A + (c + d\lambda - \lambda^2)B = 0 
+\end{cases}
+\end{equation}
+
+Система (16) имеет ненулевое решение тогда и только тогда, когда определитель матрицы коэффициентов равен нулю:
+
+\begin{gather}
+\det 
+\begin{pmatrix} 
+\lambda^2 - \dfrac{b}{l} \lambda - \dfrac{a + g}{l} & -\left( \dfrac{c}{l} + \dfrac{d}{l} \lambda \right) \\ 
+a + b\lambda & c + d\lambda - \lambda^2 
+\end{pmatrix} = 0
+\end{gather}
+
+Вычисляем определитель:
+
+\begin{gather}
+\left( \lambda^2 - \frac{b}{l} \lambda - \frac{a + g}{l} \right) (c + d\lambda - \lambda^2) + \left( \frac{c}{l} + \frac{d}{l} \lambda \right) (a + b\lambda) = 0
+\end{gather}
+
+После раскрытия скобок и приведения подобных членов получаем характеристическое уравнение:
+
+\begin{gather}
+\lambda^4 - \left( d + \frac{b}{l} \right) \lambda^3 - \left( c + \frac{g}{l} + \frac{a}{l} \right) \lambda^2 + \frac{g}{l} d \lambda + \frac{g}{l} c = 0
+\end{gather}
+
+Запишем полином (19) в стандартной форме:
+
+\begin{gather}
+\lambda^4 + A_3 \lambda^3 + A_2 \lambda^2 + A_1 \lambda + A_0 = 0
+\end{gather}
+
+где
+
+\begin{gather}
+A_3 = -\left( d + \frac{b}{l} \right), \quad A_2 = -\left( c + \frac{g}{l} + \frac{a}{l} \right), \quad A_1 = \frac{g}{l} d, \quad A_0 = \frac{g}{l} c
+\end{gather}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\textwidth]{ystal.jpg}
+\caption{Я устал, я ухожу.}
+\label{fig:risunok}
+\end{figure}
+
+
+
+
+
+
+
+
+
+\end{document}
